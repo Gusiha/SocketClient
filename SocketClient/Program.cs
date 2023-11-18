@@ -1,21 +1,30 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Text.Unicode;
-using System.Threading.Channels;
 
-string message = "Hello from NoteBook";
-Byte[] buffer = Encoding.UTF8.GetBytes(message);
+string ipAddress = "10.102.3.185";
+//string ipAddress = "10.126.0.26";
+//string ipAddress = "10.102.81.138";
+//string ipAddress = "10.102.220.114";
 
 
-int port = 3245;
-IPAddress IPAddress = IPAddress.Parse("192.168.0.105");
+int port = 11000;
+IPAddress IPAddress = IPAddress.Parse(ipAddress);
 Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-socket.Connect(IPAddress, port);    
-if(socket.Connected)
-{
-    Console.WriteLine("Connected");
-}
 
-socket.Send(buffer, 0, buffer.Length, SocketFlags.None);
+
+while (true)
+{
+    string message = Console.ReadLine();
+    byte[] buffer = new byte[2048];
+    buffer = Encoding.UTF8.GetBytes(message);
+    socket.Connect(IPAddress, port);
+    socket.Send(buffer);
+    Console.WriteLine($"Message sent to {ipAddress}");
+    buffer = new byte[1024];
+    socket.Receive(buffer);
+    Console.WriteLine($"Message recieved from {ipAddress} : {Encoding.UTF8.GetString(buffer)}");
+    socket.Close();
+    Console.WriteLine("Socket is closed");
+}
 
